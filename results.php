@@ -130,6 +130,7 @@ else{
     </nav>
 </header>
 <main>
+    <a name="pageTop"></a>
     <h1> LCDN GL BALANCER </h1>
     <h4> Below is the analysis of the submitted F657 GL File</h4>
     <div class="container-fluid">
@@ -152,6 +153,7 @@ else{
                 ?>
             </div>
         </div>
+        <a href="#pageTop">Back to Top</a>
     </div>
 </main>
 </body>
