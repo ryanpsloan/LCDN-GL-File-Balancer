@@ -98,6 +98,7 @@ else{
 </head>
 <body>
 <header>
+    <a name="pageTop"></a>
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -130,7 +131,7 @@ else{
     </nav>
 </header>
 <main>
-    <a name="pageTop"></a>
+
     <h1> LCDN GL BALANCER </h1>
     <h4> Below is the analysis of the submitted F657 GL File</h4>
     <div class="container-fluid">
@@ -151,9 +152,10 @@ else{
                     }
                 }
                 ?>
+                <a href="#pageTop">Back to Top</a>
             </div>
         </div>
-        <a href="#pageTop">Back to Top</a>
+
     </div>
 </main>
 </body>
