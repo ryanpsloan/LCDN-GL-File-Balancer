@@ -2,8 +2,8 @@
 session_start();
 /**********************************************************************************************************************
 Author: Ryan Sloan
-This page acts as the starting point for the upload and processing of LCN F657 General Ledger files. It can take .csv
-.xls or .xlsx. After upload the form action sends the file data to processor.php
+This page acts as the starting point for the upload and processing of LCN F657 General Ledger files. It takes a .txt.
+After upload the form action sends the file data to processor.php
  ryan@paydayinc.com
  *********************************************************************************************************************/
 
@@ -88,6 +88,7 @@ else{
             margin-right: auto;
             padding: 15px;
         }
+
         .button{
             background-color: royalblue;
         }
@@ -114,6 +115,7 @@ else{
         .link{
             color: blue;
         }
+
     </style>
     <script>
         function openWindow() {
@@ -163,11 +165,10 @@ else{
                 <tr><th><h2>LCDN F657 GL File Analyzer</h2></th></tr>
                 <tr><th>Instructions:</th></tr>
                 <tr><td>1. Download the F657 File as .txt from LCDN</td></tr>
-                <tr><td>2. Open and <a href="#" onclick="openWindow();">Sort the File</a> using a Excel or Open Office</td></tr>
-                <tr><td>3. Export the file as .csv/.xls/.xlsx </td></tr>
-                <tr><td>4. Upload the file to this page</td></tr>
-                <tr><td>5. Click Analyze </td></tr>
-            </table><br>
+                <tr><td>2. Upload the .txt file to this page (page will sort the data)</td></tr>
+                <tr><td>3. Click Analyze </td></tr>
+            </table>
+
         </div>
     </div>
     <div class="row">
@@ -175,7 +176,7 @@ else{
             <div id="containerDiv" class="col-md-4">
                 <form action="processor.php" method="POST" enctype="multipart/form-data">
                     <table>
-                        <tr><td id="header"><label for="file">Upload Sorted .csv/.xls/.xlsx</label></td></tr>
+                        <tr><td id="header"><label for="file">Upload unsorted .txt</label></td></tr>
                         <tr><td><input type="file" id="file" name="file"></td></tr>
                         <tr><td><input type="submit" value="Analyze" class="button"></td></tr>
                         <tr><td></td></tr>
@@ -188,10 +189,13 @@ else{
                     </table>
 
                 </form>
+
             </div>
         </div>
     </div>
+
     <hr>
+
 </div>
 </main>
 </body>

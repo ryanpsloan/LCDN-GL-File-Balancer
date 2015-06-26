@@ -1,7 +1,7 @@
 <?php
 /**********************************************************************************************************************
   Author: Ryan Sloan
-  This process will read a sorted .csv F657 GL file from LCDN and analyze the credits and debits and whether or not
+  This process will read a F657 GL .txt file from LCDN and sort the data and analyze the credits and debits and whether or not
   they balance and output the total and whether or not the balance to a web page
   ryan@paydayinc.com
  *********************************************************************************************************************/
@@ -71,14 +71,13 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         }
 
         //define accepted extensions and types
-        $goodExts = array("csv", "xls", "xlsx");
-        $goodTypes = array("text/csv", "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        $goodExts = array("txt");
+        $goodTypes = array("text/plain");
 
         //test to ensure that uploaded file extension and type are acceptable - if not throw exception
         if (in_array($extension, $goodExts) === false || in_array($type, $goodTypes) === false) {
-            fwrite($log, "This page only accepts .csv/.xls/.xlsx files, please upload the correct format." . PHP_EOL);
-            throw new Exception("This page only accepts .csv/.xls/.xlsx files, please upload the correct format.");
+            fwrite($log, "This page only accepts .txt files, please upload the correct format." . PHP_EOL);
+            throw new Exception("This page only accepts .txt files, please upload the correct format.");
         }
 
         //move the file from temp location to the server - if fail throw exception
@@ -90,7 +89,6 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
             fwrite($log, "Unable to Move File to /lcdnFiles." . PHP_EOL);
             throw new RuntimeException("Unable to Move File to /lcdnFiles.");
         }
-
 
         //rename the file using todays date and time
         $month = $today->format("m");
@@ -136,7 +134,34 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
             array_pop($fileData);
         }
 
+        //sorts the data by name column index 10 and number column index 5
+        if($type = "txt") {
+            $nameArr = $numberArr = array();
+
+            foreach($fileData as $key => $value ){
+                $nameArr[] = $value[10];
+                $numberArr[] = $value[5];
+            }
+            array_multisort($nameArr, SORT_ASC, $numberArr, SORT_ASC, $fileData);
+        }
+
         $_SESSION['fileData'] = $fileData;
+
+        $lineCount = count($fileData);
+        //used to view the data
+        /*foreach($fileData as $key => $data) {
+            echo "$key => <br>";
+            $i = 0;
+            foreach($data as $k => $row){
+                var_dump($row);
+                if($i === 10){
+                    $i = 0;
+                    echo "<br>";
+                }
+                $i++;
+            }
+
+        }*/
 
         //assign the first name in the file
         $name = $fileData[0][10];
@@ -145,7 +170,6 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
 
         //filter data down to relevent information - name, debit, credit and payment code
         foreach($fileData as $row){
-
             if($row[10] !== $name) { //as iterate through the array check the name and update $name when it changes
                 $name = $row[10];
 
@@ -405,7 +429,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 $debits = array();
                 $credits = array();
             }
-            echo "<hr>";
+            //echo "<hr>";
         }
         //Used to view the data
         //------------------------------------------
@@ -447,6 +471,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         }
         //set the array with the data and date into session variables
         $_SESSION['data'] = $output;
+        $_SESSION['lineCount'] = $lineCount;
         $_SESSION['date'] = $date;
 
         //return to index.php

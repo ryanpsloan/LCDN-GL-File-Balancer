@@ -1,6 +1,7 @@
 <?php
 session_start();
 $fileData = $_SESSION['fileData'];
+
 /**********************************************************************************************************************
 Author: Ryan Sloan
 This process will read a sorted .csv F657 GL file from LCDN and analyze the credits and debits and whether or not
@@ -203,12 +204,21 @@ $handle = fopen($fileName, 'w');
 //create a .csv from updated original fileData
 for($i = 0; $i < count($fileData); $i++){
     fputcsv($handle, $fileData[$i], ",");
+    fwrite($handle, "\r\n");
+
 }
 
 fclose($handle);
 
 //assign the filename to the session for download using download.php
 $_SESSION['fileName'] = $fileName;
+
+if(isset($_SESSION['lineCount'])){
+    $lineCount = "Line Count: " .$_SESSION['lineCount'];
+}
+else{
+    $lineCount = "";
+}
 
 ?>
 <!DOCTYPE html>
@@ -248,6 +258,9 @@ $_SESSION['fileName'] = $fileName;
         .green{
             color: green;
         }
+        .lineCount{
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -283,6 +296,7 @@ $_SESSION['fileName'] = $fileName;
 <main>
     <h1> LCDN GL BALANCER </h1>
     <h4> Below reflects the adjustments made to the original file</h4>
+    <p class="lineCount"><?php echo $lineCount; ?></p>
     <br>
     <hr>
     <div class="container-fluid">

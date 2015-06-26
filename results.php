@@ -28,6 +28,7 @@ else{
     $download = "";
 }
 
+
 ?>
 <!DOCTYPE>
 <html>
@@ -137,6 +138,7 @@ else{
                 <?php
                 if(isset($output)) {
                     echo "<span class='heading border'>File Date: $date</span><br><br>";
+
                     foreach ($output as $key => $data) {
                         echo "<span class='heading'>$key</span><br>";
                         foreach ($data as $array) {
