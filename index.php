@@ -10,7 +10,7 @@ After upload the form action sends the file data to processor.php
 if(isset($_SESSION['data'])) {
     $output = $_SESSION['data'];
     $date = $_SESSION['date'];
-    $createDoc = "<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
+    $createDoc = "";//"<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
     $clear = '<a href="clear.php" class="link">Clear File</a>';
     $results = "<a href='results.php' target='_blank'>Analysis</a>";
 }
@@ -23,7 +23,7 @@ else{
 }
 
 if(isset($_SESSION['output'])){
-    $link = "<a href='createDoc.php' target='_blank'>Results</a>";
+    $link = "";//"<a href='createDoc.php' target='_blank'>Results</a>";
     $download = '<a href="download.php">Download File</a>';
 }
 else{
@@ -143,6 +143,7 @@ else{
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><?php echo $results; ?></li>
+                    <li><?php echo $clear; ?></li>
                     <li><?php echo $createDoc; ?></li>
                     <li><?php echo $download; ?></li>
                     <li><?php echo $link; ?></li>

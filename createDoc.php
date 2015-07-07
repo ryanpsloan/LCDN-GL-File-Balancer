@@ -26,56 +26,124 @@ PR061015 WK# 24, 99982499, MEDICARE, 6/11/2015, 2220, 100,    0,   0,    0,   10
 //Assign the values of the first name and number
 $number = $fileData[0][5];
 $name = $fileData[0][10];
+
+//set up netpay variable
+$netpay = false;
+
 //create arrays
 $newArray = array();
 $lineNumbers = array();
-//Assign the first line of data to the lineNumbers array
-$lineNumbers[] = 0;
+
+//create array to hold line numbers of netpay lines
+$npLineNumbers = array();
+
+//create arrays for processing data from the file
+$values = array();
+$insertLine = array();
+
+//For output purposes
+/**********************************************************************************************************/
+/*echo "Count: FileData " . count($fileData) . "<br><hr>";
+for($i = 0; $i < count($fileData); $i++){
+    echo "$i => ";
+    var_dump($fileData[$i]);
+    echo "<br><br><hr>";
+}*/
+
 
 //Iterate through $fileData
 for($i = 0; $i < count($fileData); $i++){
-
-    //demarcate where name changes and add line number to lineNumbers array
+    //demarcate where name changes and reset name and number
     if($fileData[$i][10] !== $name) {
         $name = $fileData[$i][10];
         $number = $fileData[$i][5];
-        $lineNumbers[] = $i;
+        //if netpay is not set to true by a netpay line this line saves the line number and data for that person to use later in adding a netpay line
+        if($netpay === false){ //if iteration encounters a "netpay line" it will skip this step if not it will execute
+            $insertLine[] = $i; //line number to insert into
+            $values[] = array( array($fileData[$i-1][0], $fileData[$i-1][1], "NETPAY", $fileData[$i-1][3], $fileData[$i-1][4], $fileData[$i-1][5],
+                $fileData[$i-1][6], $fileData[$i-1][7], 0.00, 0.00, $fileData[$i-1][10], 'INSERTED')); //values from the person before
+            $prevName = $fileData[$i-1][10];
+            $npLineNumbers[$prevName][$number] = $i;
+        }
+        $netpay = false;
     }
     //demarcate where number changes and add line number to lineNumbers array
     if($fileData[$i][5] !== $number) {
         $number = $fileData[$i][5];
         $name = $fileData[$i][10];
-        $lineNumbers[] = $i;
     }
+    //notate the line numbers of the final net pay line per employee per number section
+    if($fileData[$i][2] === 'NETPAY' || $fileData[$i][2] === 'NET PAYROLL') {
+        $npLineNumbers[$name][$number] = $i;
+        $netpay = true;
+    }
+
     //Add the line to a reorganized associative array that groups data by name and number
     $newArray[$name][$number][] = $fileData[$i];
 }
 
-//For output purposes
-//*****************************************************************************
-/*echo "fileData before adjustments <br><hr>";
-foreach($fileData as $key => $data){
-    echo $data[10];
-    echo "$key => ";
-    var_dump($data[8]);
-    echo "   ";
-    var_dump($data[9]);
-    echo "<br>";
-}
-echo "<hr>";*/
+for($i = 0; $i < count($insertLine); $i++) {
 
-/*echo "Line Numbers<br><hr>";
-foreach($lineNumbers as $name => $data){
-    echo "$name => <br>";
-    foreach($data as $number => $row) {
+    array_splice($fileData, $insertLine[$i], 0, $values[$i]);
+
+    $npLineNumbers[$name][$number] = $insertLine[$i];
+}
+
+echo "Netpay Line Counts: " . count($npLineNumbers) . "<br>";
+//For output purposes
+//******************************************************************************************************
+/*for($i = 0; $i < count($fileData); $i++){
+    echo "$i => ";
+    var_dump($fileData[$i]);
+    echo "<br>";
+}*/
+
+
+$q=1;
+foreach($npLineNumbers as $name => $data){
+    echo "$q : $name => ";
+    echo count($data) . "<br>";
+    foreach($data as $number => $row){
         echo "$number => ";
         var_dump($row);
         echo "<br>";
     }
     echo "<br>";
+    $q++;
 }
-echo "<br><hr>";
 
+//assign netpay line numbers from associative to indexed array
+foreach($npLineNumbers as $name => $data) {
+    foreach ($data as $number => $row) {
+        $lineNumbers[] = $row;
+    }
+}
+
+echo "Line Numbers Count: " . count($lineNumbers) . "<br>";
+//For output purposes
+//*****************************************************************************
+/*echo "<br>fileData before adjustments <br><hr>";
+foreach($fileData as $key => $data){
+    echo $data[10]. " ";
+    echo "$key => ";
+    var_dump($data[8]);
+    echo "   ";
+    var_dump($data[9]);
+    echo "   ";
+    var_dump($data[2]);
+    echo "<br>";
+}
+echo "<hr>";*/
+
+/*echo "<br>Line Numbers<br><hr>";
+for($i = 0; $i < count($lineNumbers); $i++)
+{
+    var_dump($lineNumbers[$i]);
+    echo "<br>";
+}
+echo "<br><hr>";*/
+
+/*
 $o = 0;
 echo "Reorganized Data Set<br><hr>";
 foreach($newArray as $name => $data){
@@ -135,6 +203,30 @@ foreach($newArray as $name => $data){
             "name" => $name, 'number' => $number);
 
     }
+
+}
+
+echo "Count SortedArray : ". count($sortedInfo) . "<br>";
+
+/*for($i = 0; $i < count($sortedInfo); $i++) {
+    echo "$i => ";
+    var_dump($sortedInfo[$i]);
+    echo "<br>";
+}*/
+
+$r=0;
+foreach($npLineNumbers as $name => $data){
+    echo "$r : $name => ";
+    echo count($data) . "<br>";
+    foreach($data as $number => $row){
+        echo "$number => ";
+        var_dump($row);
+        echo "<br>";
+        var_dump($sortedInfo[$r]);
+        echo "<br>";
+        $r++;
+    }
+    echo "<br><hr>";
 
 }
 
@@ -204,7 +296,7 @@ $handle = fopen($fileName, 'w');
 //create a .csv from updated original fileData
 for($i = 0; $i < count($fileData); $i++){
     fputcsv($handle, $fileData[$i], ",");
-    fwrite($handle, "\r\n");
+    //fwrite($handle, "\r\n");
 
 }
 

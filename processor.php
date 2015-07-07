@@ -135,15 +135,14 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         }
 
         //sorts the data by name column index 10 and number column index 5
-        if($type = "txt") {
-            $nameArr = $numberArr = array();
 
-            foreach($fileData as $key => $value ){
-                $nameArr[] = $value[10];
-                $numberArr[] = $value[5];
-            }
-            array_multisort($nameArr, SORT_ASC, $numberArr, SORT_ASC, $fileData);
+        $nameArr = $numberArr = array();
+
+        foreach($fileData as $key => $value ){
+            $nameArr[] = $value[10];
+            $numberArr[] = $value[5];
         }
+        array_multisort($nameArr, SORT_ASC, $numberArr, SORT_ASC, $fileData);
 
         $_SESSION['fileData'] = $fileData;
 
@@ -172,13 +171,21 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         foreach($fileData as $row){
             if($row[10] !== $name) { //as iterate through the array check the name and update $name when it changes
                 $name = $row[10];
-
             }
+
             //set up a new array structure and cast values
             $line = array('number' => (int) $row[5], 'debit' => (float) $row[8], 'credit' => (float) $row[9]);
             $groups[$name][] = $line; //insert into new array
-
         }
+
+        //Calculate total of debit column and credit column
+        $totalDebitSum = 0;
+        $totalCreditSum = 0;
+        foreach($fileData as $row){
+            $totalDebitSum += (float) $row[8];
+            $totalCreditSum += (float) $row[9];
+        }
+        $totalSumArray = array('debitTotalSum' => $totalDebitSum, 'creditTotalSum' => $totalCreditSum);
 
         //Declare variables used for counting and grouping array contents
         $oneCount = 0;
@@ -218,7 +225,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 $twoHundred = true;
                 $oneHundred = false;
                 $threeHundred = false;
-            } else if ($number === 300) {
+            } else if ($number === 300 || $number === 305) {
                 $threeHundred = true;
                 $twoHundred = false;
                 $oneHundred = false;
@@ -235,7 +242,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                         $twoHundred = true;
                         $oneHundred = false;
                         $threeHundred = false;
-                    } else if ($number === 300) { //sets 300 section on allowing 300s to be counted
+                    } else if ($number === 300 || $number === 305) { //sets 300 section on allowing 300s to be counted
                         $threeHundred = true;
                         $twoHundred = false;
                         $oneHundred = false;
@@ -310,13 +317,16 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 }
                     echo "<hr><br>";*/
                 //--------------------------------------------------
-                $sortedData[$key][300] = $groupC; //set the cut array values into new array with key for name and code
-
+                if($number === 300) {
+                    $sortedData[$key][300] = $groupC; //set the cut array values into new array with key for name and code
+                }
+                else if($number === 305){
+                    $sortedData[$key][305] = $groupC;
+                }
             }
             $oneCount = $twoCount = $threeCount = 0; //set counters to 0 to reset for next iteration
-        }
 
-        //var_dump($sortedData);
+        }
 
         $balance = array();
         //Iterate through sections and add up debit and credit columns
@@ -396,15 +406,17 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 $credits = array();
             }
             //for section 300
-            if (array_key_exists(300, $value)) {
+            if (array_key_exists(300, $value) || array_key_exists(305, $value)) {
                 foreach ($value as $k => $data) {
-                    if($k === 300) {
+                    if($k === 300 || $k === 305) {
                         foreach ($data as $c) {//iterate through sections putting debits/credits into separate arrays
                             $debits[] = $c['debit'];
                             $credits[] = $c['credit'];
                             $loopCount++;
                         }
                     }
+
+
                 }
                 $sumDebit = array_sum($debits); //sum the array
                 $sumCredit = array_sum($credits); //sum the array
@@ -423,8 +435,15 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 var_dump($sumCredit);
                 echo "<br><br>";*/
                 //--------------------------------------------------------------------
-                $balance[$key][300]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
-                $balance[$key][300]['creditSum'] = $sumCredit;
+                if($k === 300) {
+                    $balance[$key][300]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
+                    $balance[$key][300]['creditSum'] = $sumCredit;
+                }
+                else{
+                    $balance[$key][305]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
+                    $balance[$key][305]['creditSum'] = $sumCredit;
+                }
+
                 $loopCount = 0;
                 $debits = array();
                 $credits = array();
@@ -455,12 +474,12 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                     $output[$key][$k]['balance'] = $code;
                 } else { //if not subtract them and output the difference
                     if($dt > $ct){
-                        $difference = round($dt - $ct, 2);
+                        $difference = number_format(round($dt - $ct, 2),2);
                         $dbt = "<span class='highlight'>Debit Total = $$dt</span>";
                         $cdt = "Credit Total = $$ct";
                     }
                     else{
-                        $difference = round($ct - $dt, 2);
+                        $difference = number_format(round($ct - $dt,2),2);
                         $dbt = "Debit Total = $$dt";
                         $cdt = "<span class='highlight'>Credit Total = $$ct</span>";
                     }
@@ -470,6 +489,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
             }
         }
         //set the array with the data and date into session variables
+        $_SESSION['totalSum'] = $totalSumArray;
         $_SESSION['data'] = $output;
         $_SESSION['lineCount'] = $lineCount;
         $_SESSION['date'] = $date;

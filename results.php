@@ -9,7 +9,7 @@ session_start();
 if(isset($_SESSION['data'])) {
     $output = $_SESSION['data'];
     $date = $_SESSION['date'];
-    $createDoc = "<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
+    $createDoc = "";//"<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
     $clear = '<a href="clear.php" class="link">Clear File</a>';
 }
 else{
@@ -28,6 +28,12 @@ else{
     $download = "";
 }
 
+if(isset($_SESSION['totalSum'])){
+    $totalSum = $_SESSION['totalSum'];
+}
+else{
+    $totalSum = array('debitTotalSum' => "", 'creditTotalSum' => "");
+}
 
 ?>
 <!DOCTYPE>
@@ -151,6 +157,10 @@ else{
                         echo "<br><hr>";
                     }
                 }
+                $d = number_format($totalSum['debitTotalSum'], 2);
+                $c = number_format($totalSum['creditTotalSum'], 2);
+                echo "<p class='heading'>Totals</p><p>Debit Total = $$d | Credit Total = $$c </p><hr>";
+
                 ?>
                 <a href="#pageTop">Back to Top</a>
             </div>
