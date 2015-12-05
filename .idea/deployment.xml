@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="PayDay WebServer LCDN">
+  <component name="PublishConfigData" autoUpload="Always" serverName="lcdn">
     <serverData>
-      <paths name="PayDay WebServer LCDN">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="PayDay WebServer Newbridge">
+      <paths name="lcdn">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />

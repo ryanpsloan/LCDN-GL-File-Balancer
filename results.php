@@ -9,7 +9,7 @@ session_start();
 if(isset($_SESSION['data'])) {
     $output = $_SESSION['data'];
     $date = $_SESSION['date'];
-    $createDoc = "";//"<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
+    $createDoc = "<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
     $clear = '<a href="clear.php" class="link">Clear File</a>';
 }
 else{

@@ -1,4 +1,5 @@
 <?php
+//phpinfo();
 session_start();
 /**********************************************************************************************************************
 Author: Ryan Sloan
@@ -10,9 +11,10 @@ After upload the form action sends the file data to processor.php
 if(isset($_SESSION['data'])) {
     $output = $_SESSION['data'];
     $date = $_SESSION['date'];
-    $createDoc = "";//"<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
+    $createDoc = "<a href='createDoc.php' class='balanceDoc' target='_blank'>Balance Document</a>";
     $clear = '<a href="clear.php" class="link">Clear File</a>';
     $results = "<a href='results.php' target='_blank'>Analysis</a>";
+
 }
 else{
     $output = null;
@@ -20,10 +22,11 @@ else{
     $createDoc = "";
     $clear = "";
     $results = "";
+
 }
 
-if(isset($_SESSION['output'])){
-    $link = "";//"<a href='createDoc.php' target='_blank'>Results</a>";
+if(isset($_SESSION['fileName'])){
+    $link = "<a href='createDoc.php' target='_blank'>Results</a>";
     $download = '<a href="download.php">Download File</a>';
 }
 else{
@@ -63,7 +66,7 @@ else{
         }
         #actionDiv{
             display: inline-block;
-            height: 30%;
+            height: 40%;
             width: 100%;
             padding: 15px;
             text-align: center;
@@ -74,7 +77,7 @@ else{
             border: 1px solid lightslategrey;
             top: 3%;
             left: 38%;
-            height: 17em;
+            height: 22em;
             width: 27em;
             margin-left: auto;
             margin-right: auto;
@@ -184,8 +187,8 @@ else{
                         <tr><td></td></tr>
                         <tr><td><?php echo $results; ?></td></tr>
                         <tr><td><?php echo $createDoc; ?></td></tr>
+                        <tr><td><?php echo $download; ?></td></tr>
                         <tr><td><?php echo $link; ?></td></tr>
-                        <tr><td></td></tr>
                         <tr><td><?php echo $clear; ?></td></tr>
                     </table>
 

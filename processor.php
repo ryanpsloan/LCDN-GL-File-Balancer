@@ -16,7 +16,7 @@ PR061015 WK# 24, 99982499, OASDI,    6/11/2015, 2210, 100,   0,   0,    0,   44.
 PR061015 WK# 24, 99982499, ER OASDI, 6/11/2015, 2210, 100,   0,   0,    0,   44.27, AMANDA  JARAMILLO
 PR061015 WK# 24, 99982499, MEDICARE, 6/11/2015, 2220, 100,   0,   0,    0,   10.35, AMANDA  JARAMILLO
 
- * Note: file must be sorted and filtered by both name(10) and num(5) before upload
+ *
  **/
 
 session_start();
@@ -71,13 +71,13 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         }
 
         //define accepted extensions and types
-        $goodExts = array("txt");
-        $goodTypes = array("text/plain");
+        $goodExts = array("txt", "csv");
+        $goodTypes = array("text/plain", "text/csv", "application/vnd.ms-excel");
 
         //test to ensure that uploaded file extension and type are acceptable - if not throw exception
         if (in_array($extension, $goodExts) === false || in_array($type, $goodTypes) === false) {
-            fwrite($log, "This page only accepts .txt files, please upload the correct format." . PHP_EOL);
-            throw new Exception("This page only accepts .txt files, please upload the correct format.");
+            fwrite($log, "This page only accepts .txt and .csv files, please upload the correct format." . PHP_EOL);
+            throw new Exception("This page only accepts .txt and .csv files, please upload the correct format.");
         }
 
         //move the file from temp location to the server - if fail throw exception
@@ -195,6 +195,16 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         $twoHundred = false;
         $threeHundred = false;
         $sortedData = array();
+        //Used to view the data
+        //-----------------------------------------------
+        /*foreach($groups as $key => $group){
+            echo "$key => <br>";
+            for($z = 0; $z < count($group); $z++) {
+                var_dump($group[$z]);
+                echo "<br><br>";
+            }
+        }*/
+        //----------------------------------------------
         //Iterate through array and separate the data into 100, 200, 300 sections
         foreach($groups as $key => $group) {
             //view group data
@@ -221,11 +231,11 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 $oneHundred = true;
                 $twoHundred = false;
                 $threeHundred = false;
-            } else if ($number === 200) {
+            } else if ($number >= 200 && $number <= 265) {
                 $twoHundred = true;
                 $oneHundred = false;
                 $threeHundred = false;
-            } else if ($number === 300 || $number === 305) {
+            } else if ($number >= 300) {
                 $threeHundred = true;
                 $twoHundred = false;
                 $oneHundred = false;
@@ -238,14 +248,17 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                         $oneHundred = true;
                         $twoHundred = false;
                         $threeHundred = false;
-                    } else if ($number === 200) { //set 200 section on allowing 200s to be counted
+
+                    } else if ($number >= 200 && $number <= 265) { //set 200 section on allowing 200s to be counted
                         $twoHundred = true;
                         $oneHundred = false;
                         $threeHundred = false;
-                    } else if ($number === 300 || $number === 305) { //sets 300 section on allowing 300s to be counted
+
+                    } else if ($number >= 300) { //sets 300 section on allowing 300s to be counted
                         $threeHundred = true;
                         $twoHundred = false;
                         $oneHundred = false;
+
                     }
                 }
                 if ($oneHundred) { //count number of lines in 100 section
@@ -264,6 +277,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 var_dump($group);
                 echo "<br>**************************<br><hr>";
                 $i = 0;
+                    echo "$key = > <br>";
                     echo "One:$oneCount<br>";
                     echo "<br>GroupA => <br>";
                 foreach($groupA as $a) {
@@ -272,7 +286,9 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                     echo "<br>";
                     $i++;
                 }
+                    echo "number = $number";
                     echo "<hr><br>";*/
+
                 //----------------------------------------------------
                 $sortedData[$key][100] = $groupA; //set new array into another array with key values for name and code
 
@@ -285,6 +301,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 var_dump($group);
                 echo "<br>**************************<br><hr>";
                 $i = 0;
+                    echo "$key = > <br>";
                     echo "Two:$twoCount<br>";
                     echo "<br>GroupB => <br>";
                 foreach($groupB as $b) {
@@ -293,6 +310,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                     echo "<br>";
                     $i++;
                 }
+                    echo "number = $number";
                     echo "<hr><br>";*/
                 //----------------------------------------------------
                 $sortedData[$key][200] = $groupB; //set cut array into another array with key values for name and code
@@ -307,6 +325,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 var_dump($group);
                 echo "<br>**************************<br><hr>";
                 $i = 0;
+                    echo "$key = > <br>";
                     echo "Three:$threeCount<br>";
                     echo "<br>GroupC => <br>";
                 foreach($groupC as $c) {
@@ -315,20 +334,31 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                     echo "<br>";
                     $i++;
                 }
+                    echo "number = $number";
                     echo "<hr><br>";*/
+
                 //--------------------------------------------------
-                if($number === 300) {
-                    $sortedData[$key][300] = $groupC; //set the cut array values into new array with key for name and code
-                }
-                else if($number === 305){
-                    $sortedData[$key][305] = $groupC;
-                }
+                $sortedData[$key][300] = $groupC; //set the cut array values into new array with key for name and code
+
+
             }
             $oneCount = $twoCount = $threeCount = 0; //set counters to 0 to reset for next iteration
-
         }
+        //For viewing the data
+        //---------------------------
+        /*foreach($sortedData as $key => $data){
+            echo "$key => <br>";
+            foreach($data as $k => $v) {
+                echo "$k => <br>";
+                var_dump($v);
+                echo "<br>";
+            }
+            echo "<br>";
+        }*/
+        //--------------------------------
 
         $balance = array();
+
         //Iterate through sections and add up debit and credit columns
         foreach($sortedData as $key => $value) {
             $debits = array();
@@ -405,10 +435,10 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 $debits = array();
                 $credits = array();
             }
-            //for section 300
-            if (array_key_exists(300, $value) || array_key_exists(305, $value)) {
+           //echo "<hr>";
+            if (array_key_exists(300, $value)) {
                 foreach ($value as $k => $data) {
-                    if($k === 300 || $k === 305) {
+                    if($k === 300) {
                         foreach ($data as $c) {//iterate through sections putting debits/credits into separate arrays
                             $debits[] = $c['debit'];
                             $credits[] = $c['credit'];
@@ -435,20 +465,13 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                 var_dump($sumCredit);
                 echo "<br><br>";*/
                 //--------------------------------------------------------------------
-                if($k === 300) {
-                    $balance[$key][300]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
-                    $balance[$key][300]['creditSum'] = $sumCredit;
-                }
-                else{
-                    $balance[$key][305]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
-                    $balance[$key][305]['creditSum'] = $sumCredit;
-                }
-
+                $balance[$key][300]['debitSum'] = $sumDebit; // set summed values into new array with name and code as key
+                $balance[$key][300]['creditSum'] = $sumCredit;
                 $loopCount = 0;
                 $debits = array();
                 $credits = array();
             }
-            //echo "<hr>";
+
         }
         //Used to view the data
         //------------------------------------------
@@ -485,14 +508,19 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
                     }
                     $code = "| $k | $dbt | $cdt | <span class='red'>$$difference</span> <br>";
                     $output[$key][$k]['notBalance'] = $code;
+                    $toBalance[$key][$k]= array($dt, $ct);
                 }
             }
         }
+
         //set the array with the data and date into session variables
         $_SESSION['totalSum'] = $totalSumArray;
         $_SESSION['data'] = $output;
         $_SESSION['lineCount'] = $lineCount;
         $_SESSION['date'] = $date;
+        $_SESSION['toBalance'] = $toBalance;
+
+
 
         //return to index.php
         header("Location: results.php");
