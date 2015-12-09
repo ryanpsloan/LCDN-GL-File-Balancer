@@ -49,20 +49,21 @@ if(isset($_SESSION['fileData'])) {
         $groups[$data[10]][$key][] = $data;
     }
     //var_dump($groups);
-    foreach ($groups as $groupKey => $group) {
+    foreach ($groups as $groupKey => &$group) {
         $bool = true;
-        foreach ($group as $numKey => $number) {
+        foreach ($group as $numKey => &$number) {
             $bool = in_array_r("NETPAY", $number);
             $test = in_array_r("NET PAYROLL", $number);
             if (!$bool && !$test) {
-                $number[] = array($number[0][0], $number[0][1], "NETPAY", $number[0][3], "1030", $number[0][5], $number[0][6], $number[0][7], "0.00", "0.00", $number[0][10]);
+                $lineNumber = $number[count($number)-1][11];
+                $number[] = array($number[0][0], $number[0][1], "NETPAY", $number[0][3], "1030", $number[0][5], $number[0][6], $number[0][7], "0.00", "0.00", $number[0][10],$lineNumber+1);
                 //var_dump($number);
             }
         }
         unset($number);
     }
     unset($group);
-
+    //var_dump($groups);
     $lines = array();
     foreach ($groups as $groupKey => $group) {
         if (array_key_exists($groupKey, $toBalance)) {
