@@ -81,7 +81,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         }
 
         //move the file from temp location to the server - if fail throw exception
-        $directory = "/var/www/html/lcdn/lcdnFiles";
+        $directory = "/var/www/html/LCDN/lcdnFiles";
         if (move_uploaded_file($tmp_name, "$directory/$name")) {
             fwrite($log, "File Successfully Uploaded." . PHP_EOL);
             //echo "<p>File Successfully Uploaded.</p>";
@@ -94,7 +94,7 @@ if(isset($_FILES)) { //Check to see if a file is uploaded
         $month = $today->format("m");
         $day = $today->format('d');
         $year = $today->format('y');
-        $time = $today->format('H:i:s');
+        $time = $today->format('H-i-s');
 
         $newName = "$directory/lcdnData-$month-$day-$year-$time.$extension";
         if ((rename("$directory/$name", $newName))) {

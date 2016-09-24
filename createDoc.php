@@ -165,7 +165,7 @@ if(isset($_SESSION['fileData'])) {
     $month = $today->format("m");
     $day = $today->format('d');
     $year = $today->format('y');
-    $time = $today->format('H:i:s');
+    $time = $today->format('H-i-s');
 
 
 //Create a file name using todays date and current time
