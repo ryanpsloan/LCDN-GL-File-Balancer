@@ -33,7 +33,7 @@ PR061015 WK# 24, 99982499, MEDICARE, 6/11/2015, 2220, 100,    0,   0,    0,   10
 **/
 if(isset($_SESSION['fileData'])) {
     $fileData = $_SESSION['fileData'];
-    $toBalance = $_SESSION['toBalance'];
+    $toBalance = $_SESSION['toBalance'] !== null ? $_SESSION['toBalance'] : array();
     //var_dump($fileData);
     //var_dump($toBalance);
     $groups = array();
